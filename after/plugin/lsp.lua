@@ -7,6 +7,9 @@ end)
 
 require('mason').setup({})
 require('mason-lspconfig').setup({
+	-- PACKAGE REQUREMENTS
+	-- clangd: unzip
+	-- bashls: npm
 	ensure_installed = {'lua_ls', 'clangd', 'bashls'},
 	handlers = {
 		lsp.default_setup,
