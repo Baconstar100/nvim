@@ -12,6 +12,9 @@ Plug('nvim-treesitter/playground')
 Plug('theprimeagen/harpoon', {branch = "harpoon2"} )
 Plug('mbbill/undotree')
 Plug('tpope/vim-fugitive')
+Plug('nvimdev/galaxyline.nvim')
+Plug('nvim-tree/nvim-web-devicons')
+Plug('sudormrfbin/cheatsheet.nvim')
 
 -- Color Scheme
 Plug('samharju/synthweave.nvim')

@@ -1,0 +1,19 @@
+## Harpoon @harpoon
+Add current file to Harpoon | <C-a>
+Remove current file from Harpoon | <C-r>
+Open Harpoon menu | <C- >
+Switch to window num x specified | <A-x>
+Remove window num x specified | <C-A-r>x
+Replace window num x specified with current window | <C-A-s>x
+Switch to previous index window | <A-Left>
+Switch to next index window | <A-Right>
+
+## Telescope @telescope
+Browse current git files | <C-p>
+Browse opened directory | <leader>pf
+
+## Undotree @undotree
+Toggle view of Undotree | <C-u>
+
+## Neovim @neovim
+Open explorer | <leader>dr
