@@ -13,9 +13,9 @@ Plug('theprimeagen/harpoon', {branch = "harpoon2"} )
 Plug('mbbill/undotree')
 Plug('tpope/vim-fugitive')
 
--- Color Theme
+-- Color Scheme
 Plug('samharju/synthweave.nvim')
-
+Plug('rafi/awesome-vim-colorschemes')
 
 -- LSP
 Plug('neovim/nvim-lspconfig')
