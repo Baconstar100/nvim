@@ -1,5 +1,5 @@
 function ColorThing(color)
-	color = color or 'gotham256'
+	color = color or 'fluoromachine'
 	vim.cmd.colorscheme(color)
 	vim.cmd("syntax on")
 end

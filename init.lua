@@ -15,10 +15,12 @@ Plug('tpope/vim-fugitive')
 Plug('nvimdev/galaxyline.nvim')
 Plug('nvim-tree/nvim-web-devicons')
 Plug('sudormrfbin/cheatsheet.nvim')
+Plug('yamatsum/nvim-nonicons')
 
 -- Color Scheme
 Plug('samharju/synthweave.nvim')
 Plug('rafi/awesome-vim-colorschemes')
+Plug('maxmx03/fluoromachine.nvim')
 
 -- LSP
 Plug('neovim/nvim-lspconfig')
