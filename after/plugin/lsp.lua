@@ -5,6 +5,12 @@ lsp.on_attach(function(client, bufnr)
 	lsp.default_keymaps({buffer = bufnr})
 end)
 
+vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
+	vim.lsp.diagnostic.on_publish_diagnostics, {
+		update_in_insert = true,
+	}
+)
+
 require('mason').setup({})
 require('mason-lspconfig').setup({
 	-- PACKAGE REQUREMENTS
