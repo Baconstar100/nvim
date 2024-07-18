@@ -17,6 +17,7 @@ Plug('nvim-tree/nvim-web-devicons')
 Plug('sudormrfbin/cheatsheet.nvim')
 Plug('yamatsum/nvim-nonicons')
 Plug('nvim-tree/nvim-web-devicons')
+Plug('ryanoasis/vim-devicons')
 
 -- Color Scheme
 Plug('samharju/synthweave.nvim')
