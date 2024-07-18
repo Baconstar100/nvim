@@ -3,7 +3,9 @@ vim.opt.showmatch = false;
 
 local function fileInHarpoon()
 	local h = require('harpoon')
-	return h:list():index_of()
+	local x = vim.cmd('file')
+	local path = string.sub(x, string.find(x, '"')+1, string.find(x, '"', 2)-1)
+	return h:list():get_by_value(path).idx;
 end
 
 

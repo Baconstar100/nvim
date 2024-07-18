@@ -16,6 +16,7 @@ Plug('nvim-lualine/lualine.nvim')
 Plug('nvim-tree/nvim-web-devicons')
 Plug('sudormrfbin/cheatsheet.nvim')
 Plug('nvim-tree/nvim-web-devicons')
+Plug('nvim-lua/plenary.nvim')
 
 -- Color Scheme
 Plug('samharju/synthweave.nvim')
