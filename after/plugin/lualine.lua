@@ -19,7 +19,7 @@ require('lualine').setup {
     		lualine_b = {'branch', 'diff', 'diagnostics'},
     		lualine_c = {{'filename', path = 4}, {'filetype', icon_only = true} },
     		lualine_x = {'searchcount'},
-		lualine_y = {fileInHarpoon},
+		lualine_y = {},
     		lualine_z = {'location'}
   	},
   	inactive_sections = {
