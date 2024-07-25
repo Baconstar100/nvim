@@ -1,13 +1,12 @@
 vim.opt.showmode = false;
 vim.opt.showmatch = false;
 
-local function fileInHarpoon()
-	local h = require('harpoon')
-	local x = vim.cmd('file')
-	local path = string.sub(x, string.find(x, '"')+1, string.find(x, '"', 2)-1)
-	return h:list():get_by_value(path).idx;
+local function lineLocation()
+	local numLines = vim.fn.line('$')
+	local currLine = vim.fn.line('.')
+	local currCol = vim.fn.charcol('.')
+	return currLine .. ' / ' .. numLines .. ':' .. currCol
 end
-
 
 require('lualine').setup {
 	options = {
@@ -20,7 +19,7 @@ require('lualine').setup {
     		lualine_c = {{'filename', path = 4}, {'filetype', icon_only = true} },
     		lualine_x = {'searchcount'},
 		lualine_y = {},
-    		lualine_z = {'location'}
+    		lualine_z = {lineLocation}
   	},
   	inactive_sections = {
     		lualine_a = {{'filename', path = 4}, {'filetype', icon_only = true} },
