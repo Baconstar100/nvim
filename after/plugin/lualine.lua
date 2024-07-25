@@ -5,7 +5,7 @@ local function lineLocation()
 	local numLines = vim.fn.line('$')
 	local currLine = vim.fn.line('.')
 	local currCol = vim.fn.charcol('.')
-	return currLine .. '/' .. numLines .. ':' .. currCol
+	return currLine .. ' / ' .. numLines .. ':' .. currCol
 end
 
 require('lualine').setup {
