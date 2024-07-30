@@ -4,8 +4,9 @@ vim.opt.showmatch = false;
 local function lineLocation()
 	local numLines = vim.fn.line('$')
 	local currLine = vim.fn.line('.')
+	local numCol = vim.fn.charcol('$')
 	local currCol = vim.fn.charcol('.')
-	return currLine .. ' / ' .. numLines .. ':' .. currCol
+	return currLine .. ':' .. currCol .. ' / ' .. numLines .. ':' .. numCol
 end
 
 require('lualine').setup {
