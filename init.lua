@@ -1,13 +1,9 @@
-local dataDir = vim.fn.has('nvim') == 1 and vim.fn.stdpath('data') .. '/site' or '~/.vim'
+local dataDir = vim.fn.has('nvim') == 1 and vim.fn.stdpath('data') .. '/site'
 
-if vim.fn.empty(vim.fn.glob(dataDir .. '/autoload/pluv.vim')) > 0 then
+if vim.fn.empty(vim.fn.glob(dataDir .. '/autoload/plug.vim')) > 0 then
 	vim.fn.system({
 		'curl', '-fLo', dataDir .. '/autoload/plug.vim', '--create-dirs',
 		'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-	})
-	vim.api.nvim_create_autocmd('VimEnter', {
-		pattern = '*',
-		command = 'PlugInstall --sync | source $MYVIMRC'
 	})
 end
 
