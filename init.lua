@@ -1,3 +1,16 @@
+local dataDir = vim.fn.has('nvim') == 1 and vim.fn.stdpath('data') .. '/site' or '~/.vim'
+
+if vim.fn.empty(vim.fn.glob(dataDir .. '/autoload/pluv.vim')) > 0 then
+	vim.fn.system({
+		'curl', '-fLo', dataDir .. '/autoload/plug.vim', '--create-dirs',
+		'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+	})
+	vim.api.nvim_create_autocmd('VimEnter', {
+		pattern = '*',
+		command = 'PlugInstall --sync | source $MYVIMRC'
+	})
+end
+
 require('remap')
 
 local Plug = vim.fn['plug#']
@@ -31,6 +44,6 @@ Plug('L3MON4D3/LuaSnip')
 Plug('williamboman/mason.nvim')
 Plug('williamboman/mason-lspconfig.nvim')
 Plug('VonHeikemen/lsp-zero.nvim', {branch = 'v3.x'})
-
+Plug('jlcrochet/vim-razor')
 
 vim.call("plug#end")

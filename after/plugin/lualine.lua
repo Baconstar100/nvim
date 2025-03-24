@@ -2,11 +2,7 @@ vim.opt.showmode = false;
 vim.opt.showmatch = false;
 
 local function lineLocation()
-	local numLines = vim.fn.line('$')
-	local currLine = vim.fn.line('.')
-	local numCol = vim.fn.charcol('$')
-	local currCol = vim.fn.charcol('.')
-	return currLine .. ':' .. currCol .. ' / ' .. numLines .. ':' .. numCol
+	return vim.fn.line('.') .. ':' .. vim.fn.charcol('.') .. ' / ' .. vim.fn.line('$') .. ':' .. vim.fn.charcol('$')
 end
 
 require('lualine').setup {
@@ -31,4 +27,3 @@ require('lualine').setup {
     		lualine_z = {}
   	},
 }
-
