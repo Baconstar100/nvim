@@ -13,6 +13,12 @@ local Plug = vim.fn['plug#']
 
 vim.call("plug#begin")
 
+-- Needed for Nuget
+Plug('mattn/webapi-vim')
+Plug('junegunn/fzf.vim')
+Plug('Shougo/deoplete.nvim')
+Plug('markwoodhall/vim-nuget')
+
 Plug('https://github.com/rktjmp/lush.nvim.git')
 Plug('nvim-lua/plenary.nvim')
 Plug('nvim-telescope/telescope.nvim')
