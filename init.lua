@@ -32,11 +32,13 @@ Plug('nvim-tree/nvim-web-devicons')
 Plug('sudormrfbin/cheatsheet.nvim')
 Plug('nvim-tree/nvim-web-devicons')
 Plug('nvim-lua/plenary.nvim')
+Plug('folke/trouble.nvim')
 
 -- Color Scheme
 Plug('samharju/synthweave.nvim')
 Plug('rafi/awesome-vim-colorschemes')
 Plug('maxmx03/fluoromachine.nvim')
+Plug('bluz71/vim-moonfly-colors', {as = 'moonfly'})
 
 -- LSP
 Plug('neovim/nvim-lspconfig')
