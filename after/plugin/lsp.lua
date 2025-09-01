@@ -8,8 +8,12 @@ end)
 vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
 	vim.lsp.diagnostic.on_publish_diagnostics, {
 		update_in_insert = true,
+		virtual_text = true,
 	}
 )
+
+vim.o.updatetime = 250
+vim.cmd [[autocmd CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {focus=false})]]
 
 require('mason').setup({})
 require('mason-lspconfig').setup({
@@ -23,16 +27,16 @@ require('mason-lspconfig').setup({
 })
 
 
-cmp.setup({
-	preselct = 'item',
-	completion = {
-		completeopt = 'menu,menuone,noinsert'
-	},
-	mapping = {
-		['<CR>'] = cmp.mapping.confirm({select = true}),
-	},
-	window = {
-		completion = cmp.config.window.bordered(),
-		documentation = cmp.config.window.bordered(),
-	},
-})
+--cmp.setup({
+--	preselct = 'item',
+--	completion = {
+--		completeopt = 'menu,menuone,noinsert'
+--	},
+--	mapping = {
+--		['<CR>'] = cmp.mapping.confirm({select = true}),
+--	},
+--	window = {
+--		completion = cmp.config.window.bordered(),
+--		documentation = cmp.config.window.bordered(),
+--	},
+--})

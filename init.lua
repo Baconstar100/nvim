@@ -33,6 +33,9 @@ Plug('sudormrfbin/cheatsheet.nvim')
 Plug('nvim-tree/nvim-web-devicons')
 Plug('nvim-lua/plenary.nvim')
 Plug('folke/trouble.nvim')
+Plug('tpope/vim-dadbod')
+Plug('kristijanhusak/vim-dadbod-ui')
+Plug('kristijanhusak/vim-dadbod-completion')
 
 -- Color Scheme
 Plug('samharju/synthweave.nvim')
