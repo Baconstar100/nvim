@@ -13,14 +13,24 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
 )
 
 vim.o.updatetime = 250
-vim.cmd [[autocmd CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {focus=false})]]
+vim.cmd [[autocmd CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {focus=false, scope="cursor"})]]
+
+vim.api.nvim_create_autocmd("CursorMoved", {
+	callback = function()
+		for _, win in ipairs(vim.api.nvim_list_wins()) do
+			if vim.api.nvim_win_get_config(win).relative ~= '' then
+				vim.api.nvim_win_close(win, true)
+			end
+		end
+	end
+})
 
 require('mason').setup({})
 require('mason-lspconfig').setup({
 	-- PACKAGE REQUREMENTS
 	-- clangd: unzip
 	-- bashls: npm
-	ensure_installed = {'lua_ls', 'clangd', 'bashls'},
+	ensure_installed = {'lua_ls', 'clangd', 'bashls', 'omnisharp'},
 	handlers = {
 		lsp.default_setup,
 	},
