@@ -1,6 +1,7 @@
 local lsp = require('lsp-zero')
 local cmp = require('cmp')
-local diagnostic_float_win = nil
+local diagnostic_win = nil
+local hover_win = nil
 
 
 lsp.on_attach(function(client, bufnr)
@@ -15,27 +16,85 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
 )
 
 vim.o.updatetime = 250
---vim.cmd [[autocmd CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {focus=false})]]
 
-vim.api.nvim_create_autocmd("CursorHold", {
-  callback = function()
-    if diagnostic_float_win == nil or not vim.api.nvim_win_is_valid(diagnostic_float_win) then
-      diagnostic_float_win = vim.diagnostic.open_float(nil, {
-        focusable = false,
-        scope = "cursor"
-      })
-    end
-  end
-})
+function showFloat()
+	vim.api.nvim_create_autocmd("CursorHold", {
+		callback = function()
+			local bufnr = 0
+			local cursorPos = vim.api.nvim_win_get_cursor(0)
+			local line = cursorPos[1] - 1
+			local col = cursorPos[2]
+
+			local diagnostics = vim.diagnostic.get(0, {lnum = line})
+			local diagLines = {}
+
+			for _, d in ipairs(diagnostics) do
+				if d.col <= col and col < d.end_col then
+					if d.severity == vim.diagnostic.severity.ERROR then
+						table.insert(diagLines, "🔴 **Error**: " .. d.message)
+					elseif d.severity == vim.diagnostic.severity.WARN then
+						table.insert(diagLines, "🟡 **Warning**: " .. d.message)
+					end
+				end
+			end
+
+			vim.lsp.buf_request(bufnr, "textDocument/hover", vim.lsp.util.make_position_params(), function(err, result)
+				if err or not result or not result.contents then return end
+
+				local raw = vim.lsp.util.convert_input_to_markdown_lines(result.contents)
+				local joined = table.concat(raw, "\n")
+				local hoverLines = vim.split(joined, "\n", {trimempty = true})
+
+				local combinedLines = {}
+				if #hoverLines > 0 then
+					vim.list_extend(combinedLines, hoverLines)
+				end
+				if #diagLines > 0 then
+					table.insert(combinedLines, "")
+					vim.list_extend(combinedLines, diagLines)
+				end
+
+				if #combinedLines == 0 then return end
+
+				vim.lsp.util.open_floating_preview(combinedLines, "markdown", {
+					border = "rounded",
+					focusable = false,
+				})
+			end)
+		end
+	})
+end
+
 
 vim.api.nvim_create_autocmd("CursorMoved", {
-  callback = function()
-print(diagnostic_float_win)
-    if diagnostic_float_win and vim.api.nvim_win_is_valid(diagnostic_float_win) then
-      vim.api.nvim_win_close(diagnostic_float_win, true)
-      diagnostic_float_win = nil
-    end
-  end
+  	callback = function()
+    		if diagnostic_win and vim.api.nvim_win_is_valid(diagnostic_win) then
+      			vim.api.nvim_win_close(diagnostic_win, true)
+      			diagnostic_win = nil
+		end
+
+		if hover_win and vim.api.nvim_win_is_valid(hover_win) then
+      			vim.api.nvim_win_close(hover_win, true)
+      			hover_win = nil
+		end
+  	end
+})
+
+vim.api.nvim_create_autocmd("BufEnter", {
+	callback = function()
+		local buftype = vim.api.nvim_get_option_value("buftype", { buf = 0 })
+		if buftype ~= "" then
+			if diagnostic_win and vim.api.nvim_win_is_valid(diagnostic_win) then
+				vim.api.nvim_win_close(diagnostic_win, true)
+				diagnostic_win = nil
+			end
+
+			if hover_win and vim.api.nvim_win_is_valid(hover_win) then
+				vim.api.nvim_win_close(hover_win, true)
+				hover_win = nil
+			end
+		end
+	end
 })
 
 require('mason').setup({})
@@ -48,7 +107,6 @@ require('mason-lspconfig').setup({
 		lsp.default_setup,
 	},
 })
-
 
 cmp.setup({
 	preselct = 'item',
@@ -63,3 +121,6 @@ cmp.setup({
 		documentation = cmp.config.window.bordered(),
 	},
 })
+
+
+showFloat()
