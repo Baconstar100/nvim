@@ -1,8 +1,6 @@
 local lsp = require('lsp-zero')
 local cmp = require('cmp')
-local diagnostic_win = nil
-local hover_win = nil
-
+local hover_win_open = true
 
 lsp.on_attach(function(client, bufnr)
 	lsp.default_keymaps({buffer = bufnr})
@@ -15,88 +13,75 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
 	}
 )
 
-vim.o.updatetime = 250
+function is_hover_supported(bufnr)
+  for _, client in ipairs(vim.lsp.get_active_clients({ bufnr = bufnr })) do
+    if client.supports_method("textDocument/hover") then
+      return true
+    end
+  end
+  return false
+end
 
 function showFloat()
-	vim.api.nvim_create_autocmd("CursorHold", {
-		callback = function()
-			local bufnr = 0
-			local cursorPos = vim.api.nvim_win_get_cursor(0)
-			local line = cursorPos[1] - 1
-			local col = cursorPos[2]
+  vim.api.nvim_create_autocmd("CursorHold", {
+    callback = function()
+      local bufnr = vim.api.nvim_get_current_buf()
+      local cursor = vim.api.nvim_win_get_cursor(0)
+      local line = cursor[1] - 1
+      local col = cursor[2]
 
-			local diagnostics = vim.diagnostic.get(0, {lnum = line})
-			local diagLines = {}
+      if not is_hover_supported(bufnr) then return end
 
-			for _, d in ipairs(diagnostics) do
-				if d.col <= col and col < d.end_col then
-					if d.severity == vim.diagnostic.severity.ERROR then
-						table.insert(diagLines, "🔴 **Error**: " .. d.message)
-					elseif d.severity == vim.diagnostic.severity.WARN then
-						table.insert(diagLines, "🟡 **Warning**: " .. d.message)
-					end
-				end
-			end
+      -- Filter diagnostics by exact column match
+      local diagnostics = vim.diagnostic.get(bufnr, { lnum = line })
+      local diag_lines = {}
 
-			vim.lsp.buf_request(bufnr, "textDocument/hover", vim.lsp.util.make_position_params(), function(err, result)
-				if err or not result or not result.contents then return end
+      for _, d in ipairs(diagnostics) do
+        local start_col = d.col
+        local end_col = d.end_col or (start_col + 1) -- fallback if end_col is missing
 
-				local raw = vim.lsp.util.convert_input_to_markdown_lines(result.contents)
-				local joined = table.concat(raw, "\n")
-				local hoverLines = vim.split(joined, "\n", {trimempty = true})
+        if col >= start_col and col < end_col then
+          if d.severity == vim.diagnostic.severity.ERROR then
+            table.insert(diag_lines, "🔴 **Error**: " .. d.message)
+          elseif d.severity == vim.diagnostic.severity.WARN then
+            table.insert(diag_lines, "🟠 **Warning**: " .. d.message)
+          end
+        end
+      end
 
-				local combinedLines = {}
-				if #hoverLines > 0 then
-					vim.list_extend(combinedLines, hoverLines)
-				end
-				if #diagLines > 0 then
-					table.insert(combinedLines, "")
-					vim.list_extend(combinedLines, diagLines)
-				end
+      -- Request hover info
+      vim.lsp.buf_request(bufnr, "textDocument/hover", vim.lsp.util.make_position_params(), function(err, result)
+        if err or not result or not result.contents then return end
 
-				if #combinedLines == 0 then return end
+        local hover_lines = vim.lsp.util.convert_input_to_markdown_lines(result.contents)
+        hover_lines = vim.lsp.util.trim_empty_lines(hover_lines)
 
-				vim.lsp.util.open_floating_preview(combinedLines, "markdown", {
-					border = "rounded",
-					focusable = false,
-				})
-			end)
-		end
-	})
+        -- Combine hover and diagnostics
+        local combined_lines = {}
+
+        if #hover_lines > 0 then
+          vim.list_extend(combined_lines, hover_lines)
+        end
+
+        if #diag_lines > 0 then
+          table.insert(combined_lines, "") -- spacing
+          vim.list_extend(combined_lines, diag_lines)
+        end
+
+        if #combined_lines == 0 then return end
+
+        hover_win_open = false
+	vim.lsp.util.open_floating_preview(combined_lines, "markdown", {
+          border = "rounded",
+          focusable = false,
+        })
+      end)
+    end
+  })
 end
 
 
-vim.api.nvim_create_autocmd("CursorMoved", {
-  	callback = function()
-    		if diagnostic_win and vim.api.nvim_win_is_valid(diagnostic_win) then
-      			vim.api.nvim_win_close(diagnostic_win, true)
-      			diagnostic_win = nil
-		end
-
-		if hover_win and vim.api.nvim_win_is_valid(hover_win) then
-      			vim.api.nvim_win_close(hover_win, true)
-      			hover_win = nil
-		end
-  	end
-})
-
-vim.api.nvim_create_autocmd("BufEnter", {
-	callback = function()
-		local buftype = vim.api.nvim_get_option_value("buftype", { buf = 0 })
-		if buftype ~= "" then
-			if diagnostic_win and vim.api.nvim_win_is_valid(diagnostic_win) then
-				vim.api.nvim_win_close(diagnostic_win, true)
-				diagnostic_win = nil
-			end
-
-			if hover_win and vim.api.nvim_win_is_valid(hover_win) then
-				vim.api.nvim_win_close(hover_win, true)
-				hover_win = nil
-			end
-		end
-	end
-})
-
+lsp.preset('recommended')
 require('mason').setup({})
 require('mason-lspconfig').setup({
 	-- PACKAGE REQUREMENTS
@@ -122,5 +107,6 @@ cmp.setup({
 	},
 })
 
-
+lsp.setup()
+vim.o.updatetime = 250
 showFloat()
