@@ -6,15 +6,39 @@ lsp.on_attach(function(client, bufnr)
 	lsp.default_keymaps({buffer = bufnr})
 end)
 
-vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
-	vim.lsp.diagnostic.on_publish_diagnostics, {
-		update_in_insert = true,
-		virtual_text = true,
-	}
-)
+
+vim.diagnostic.config({
+	update_in_insert = true,
+	virtual_text = true,
+
+})
+
+--vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.diagnostic.on_publish_diagnostics, {
+
+--vim.lsp.with(
+--		update_in_insert = true,
+--		virtual_text = true,
+--	}
+--)
+
+function trim_empty_lines(lines)
+  local start_idx, end_idx = 1, #lines
+  while start_idx <= #lines and lines[start_idx] == "" do
+    start_idx = start_idx + 1
+  end
+  while end_idx >= start_idx and lines[end_idx] == "" do
+    end_idx = end_idx - 1
+  end
+  local result = {}
+  for i = start_idx, end_idx do
+    table.insert(result, lines[i])
+  end
+  return result
+end
+
 
 function is_hover_supported(bufnr)
-  for _, client in ipairs(vim.lsp.get_active_clients({ bufnr = bufnr })) do
+  for _, client in ipairs(vim.lsp.get_clients({ bufnr = bufnr })) do
     if client.supports_method("textDocument/hover") then
       return true
     end
@@ -49,12 +73,20 @@ function showFloat()
         end
       end
 
+	local clients = vim.lsp.get_clients({bufnr = bufnr})
+	local offset_encoding = "utf-16"
+	if #clients > 0 then 
+		offset_encoding = clients[1].offset_encoding or "utf-16"
+	end
+
+	local params = vim.lsp.util.make_position_params(0, offset_encoding)
+
       -- Request hover info
-      vim.lsp.buf_request(bufnr, "textDocument/hover", vim.lsp.util.make_position_params(), function(err, result)
+      vim.lsp.buf_request(bufnr, "textDocument/hover", params, function(err, result)
         if err or not result or not result.contents then return end
 
         local hover_lines = vim.lsp.util.convert_input_to_markdown_lines(result.contents)
-        hover_lines = vim.lsp.util.trim_empty_lines(hover_lines)
+        hover_lines = trim_empty_lines(hover_lines)
 
         -- Combine hover and diagnostics
         local combined_lines = {}
